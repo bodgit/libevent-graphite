@@ -123,7 +123,7 @@ graphite_connection_new(char *host, unsigned short port, struct timeval tv)
 {
 	struct graphite_connection	*c;
 
-	if ((c= calloc(1, sizeof(struct graphite_connection))) != NULL) {
+	if ((c = calloc(1, sizeof(struct graphite_connection))) != NULL) {
 		/* Set up timer to (re)connect */
 		c->connect_ev = evtimer_new(base, graphite_reconnect,
 		    (void *)c);
