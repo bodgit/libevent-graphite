@@ -64,7 +64,7 @@ void				 graphite_connection_setcb(struct graphite_connection *,
 				    void *);
 void				 graphite_connect(struct graphite_connection *);
 void				 graphite_send(struct graphite_connection *,
-				    char *, char *, long long);
+				    char *, char *, char *);
 void				 graphite_disconnect(struct graphite_connection *);
 void				 graphite_connection_free(struct graphite_connection *);
 

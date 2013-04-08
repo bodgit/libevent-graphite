@@ -229,10 +229,10 @@ graphite_connect(struct graphite_connection *c)
 
 void
 graphite_send(struct graphite_connection *c, char *metric,
-    char *value, long long timestamp)
+    char *value, char *timestamp)
 {
 	/* Yes, this is basically it */
-	evbuffer_add_printf(bufferevent_get_output(c->bev), "%s %s %lld\n",
+	evbuffer_add_printf(bufferevent_get_output(c->bev), "%s %s %s\n",
 	    metric, value, timestamp);
 
 	c->metrics_tx++;
