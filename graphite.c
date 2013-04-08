@@ -23,12 +23,83 @@
 
 #include "graphite.h"
 
+/* For use with strspn(3) */
+#define	DIGITS		"0123456789"
+#define	LOWER		"abcdefghijklmnopqrstuvwxyz"
+#define	UPPER		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define	SPACE		" "
+#define	UNDERSCORE	"_"
+#define	MINUS		"-"
+#define	PERIOD		"."
+
 struct event_base	*base;
 
 void
 graphite_init(struct event_base *b)
 {
 	base = b;
+}
+
+int
+graphite_parse(unsigned char *key, unsigned char *line, unsigned char **part)
+{
+	char	*ptr = line;
+	size_t	 len;
+
+	if (key != NULL) {
+		if (strspn(key, LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD) !=
+		    strlen(key))
+			goto bad;
+		if (part)
+			*part[0] = key;
+	} else {
+		/* Scan the metric key, make a note of how long it is */
+		if ((len = strspn(ptr,
+		    LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD)) == 0)
+			goto bad;
+		if (part)
+			*part[0] = ptr;
+		ptr += len;
+
+		/* Scan the spaces after the metric key */
+		if ((len = strspn(ptr, SPACE)) == 0)
+			goto bad;
+		*ptr = '\0';
+		ptr += len;
+	}
+
+	/* At this point, we're just concerned with the value and timestamp */
+
+	/* Scan the metric value */
+	if ((len = strspn(ptr, DIGITS MINUS PERIOD)) == 0)
+		goto bad;
+	if (part)
+		*part[1] = ptr;
+	ptr += len;
+
+	/* Scan the spaces after the metric value */
+	if ((len = strspn(ptr, SPACE)) == 0)
+		goto bad;
+	*ptr = '\0';
+	ptr += len;
+
+	/* Scan the metric timestamp */
+	if ((len = strspn(ptr, DIGITS)) == 0)
+		goto bad;
+	if (part)
+		*part[2] = ptr;
+	ptr += len;
+
+	/* If we reached the end and yet don't have a null, there's extra
+	 * junk on the line so get rid of it
+	 */
+	if (*ptr != '\0') {
+		*ptr = '\0';
+	}
+
+	return (0);
+bad:
+	return (-1);
 }
 
 void

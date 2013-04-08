@@ -50,6 +50,8 @@ struct graphite_connection {
 };
 
 void				 graphite_init(struct event_base *);
+int				 graphite_parse(unsigned char *, unsigned char *,
+				    unsigned char **);
 struct graphite_connection	*graphite_connection_new(char *,
 				    unsigned short, struct timeval);
 void				 graphite_connection_setcb(struct graphite_connection *,
