@@ -23,6 +23,10 @@
 
 #define	GRAPHITE_DEFAULT_PORT	(2003)
 
+#define	GRAPHITE_PART_METRIC	0
+#define	GRAPHITE_PART_VALUE	1
+#define	GRAPHITE_PART_TIMESTAMP	2
+
 struct graphite_connection {
 	struct evdns_base	 *dns;
 	struct bufferevent	 *bev;
@@ -51,7 +55,7 @@ struct graphite_connection {
 
 void				 graphite_init(struct event_base *);
 int				 graphite_parse(unsigned char *, unsigned char *,
-				    unsigned char **);
+				    unsigned char *[]);
 struct graphite_connection	*graphite_connection_new(char *,
 				    unsigned short, struct timeval);
 void				 graphite_connection_setcb(struct graphite_connection *,

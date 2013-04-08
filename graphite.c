@@ -41,7 +41,7 @@ graphite_init(struct event_base *b)
 }
 
 int
-graphite_parse(unsigned char *key, unsigned char *line, unsigned char **part)
+graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 {
 	char	*ptr = line;
 	size_t	 len;
@@ -51,14 +51,14 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char **part)
 		    strlen(key))
 			goto bad;
 		if (part)
-			*part[0] = key;
+			part[GRAPHITE_PART_METRIC] = key;
 	} else {
 		/* Scan the metric key, make a note of how long it is */
 		if ((len = strspn(ptr,
 		    LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD)) == 0)
 			goto bad;
 		if (part)
-			*part[0] = ptr;
+			part[GRAPHITE_PART_METRIC] = ptr;
 		ptr += len;
 
 		/* Scan the spaces after the metric key */
@@ -74,7 +74,7 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char **part)
 	if ((len = strspn(ptr, DIGITS MINUS PERIOD)) == 0)
 		goto bad;
 	if (part)
-		*part[1] = ptr;
+		part[GRAPHITE_PART_VALUE] = ptr;
 	ptr += len;
 
 	/* Scan the spaces after the metric value */
@@ -87,15 +87,14 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char **part)
 	if ((len = strspn(ptr, DIGITS)) == 0)
 		goto bad;
 	if (part)
-		*part[2] = ptr;
+		part[GRAPHITE_PART_TIMESTAMP] = ptr;
 	ptr += len;
 
 	/* If we reached the end and yet don't have a null, there's extra
 	 * junk on the line so get rid of it
 	 */
-	if (*ptr != '\0') {
+	if (*ptr != '\0')
 		*ptr = '\0';
-	}
 
 	return (0);
 bad:
