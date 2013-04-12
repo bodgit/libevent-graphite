@@ -64,7 +64,8 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 		/* Scan the spaces after the metric key */
 		if ((len = strspn(ptr, SPACE)) == 0)
 			goto bad;
-		*ptr = '\0';
+		if (part)
+			*ptr = '\0';
 		ptr += len;
 	}
 
@@ -80,7 +81,8 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 	/* Scan the spaces after the metric value */
 	if ((len = strspn(ptr, SPACE)) == 0)
 		goto bad;
-	*ptr = '\0';
+	if (part)
+		*ptr = '\0';
 	ptr += len;
 
 	/* Scan the metric timestamp */
