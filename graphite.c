@@ -34,10 +34,17 @@
 
 struct event_base	*base;
 
-void
+int
 graphite_init(struct event_base *b)
 {
+#ifdef __APPLE__
+	if (!strcmp(event_base_get_method(b), "kqueue"))
+		return (-1);
+#endif
+
 	base = b;
+
+	return (0);
 }
 
 int
@@ -124,8 +131,6 @@ graphite_event(struct bufferevent *bev, short events, void *arg)
 
 		if (c->connectcb)
 			c->connectcb(c, c->arg);
-
-		evdns_base_free(c->dns, 1);
 	} else if (events & (BEV_EVENT_ERROR|BEV_EVENT_EOF)) {
 		if (events & BEV_EVENT_ERROR) {
 			int err = bufferevent_socket_get_dns_error(bev);
@@ -150,6 +155,11 @@ graphite_event(struct bufferevent *bev, short events, void *arg)
 		 */
 		if (c->connect_index == 0)
 			c->connect_index++;
+	}
+
+	if (c->dns) {
+		evdns_base_free(c->dns, 1);
+		c->dns = NULL;
 	}
 }
 

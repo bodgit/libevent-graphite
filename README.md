@@ -52,7 +52,8 @@ Example usage:
     
             base = event_base_new();
     
-            graphite_init(base);
+            if (graphite_init(base) < 0)
+                    return (-1);
     
             if ((c = graphite_connection_new("192.0.2.1",
                 GRAPHITE_DEFAULT_PORT, tv)) == NULL)
