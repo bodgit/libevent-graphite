@@ -143,7 +143,7 @@ graphite_event(struct bufferevent *bev, short events, void *arg)
 		bufferevent_free(c->bev);
 		c->bev = NULL;
 
-		if ((events & BEV_EVENT_EOF) && c->disconnectcb)
+		if (c->disconnectcb)
 			c->disconnectcb(c, c->arg);
 
 		/* Schedule a reconnect attempt */
