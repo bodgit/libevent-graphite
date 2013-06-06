@@ -32,6 +32,12 @@
 #define	MINUS		"-"
 #define	PERIOD		"."
 
+void	 graphite_read(struct bufferevent *, void *);
+void	 graphite_event(struct bufferevent *, short, void *);
+void	 graphite_count_tx(struct evbuffer *, const struct evbuffer_cb_info *,
+	    void *arg);
+void	 graphite_reconnect(int, short, void *);
+
 struct event_base	*base;
 
 int
@@ -113,7 +119,7 @@ bad:
 void
 graphite_read(struct bufferevent *bev, void *arg)
 {
-	struct graphite_connection	*c = (struct graphite_connection *)arg;
+	//struct graphite_connection	*c = (struct graphite_connection *)arg;
 	struct evbuffer			*input = bufferevent_get_input(bev);
 
 	/* Just drain any input away */
