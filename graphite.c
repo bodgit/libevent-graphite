@@ -256,6 +256,48 @@ graphite_send(struct graphite_connection *c, char *metric,
 	c->metrics_tx++;
 }
 
+int
+graphite_send_metric(struct graphite_connection *c, char *prefix,
+    char *metric, struct timeval tv, char *format, ...)
+{
+	char	 buffer[1024];
+	char	*m, *v, *t;
+	size_t	 size = 0, length;
+	va_list	 ap;
+
+	length = 1024;
+	va_start(ap, format);
+
+	m = buffer;
+	if (prefix) {
+		if ((size = snprintf(m, length, "%s.", prefix)) >= length)
+			goto bad;
+		length -= size;
+	}
+	if ((size = snprintf(m, length, "%s", metric)) >= length)
+		goto bad;
+	length -= size + 1
+
+	v = strlen(m) + 1;
+	if ((size = vsnprintf(v, length, format, ap)) >= length)
+		goto bad;
+	length -= size + 1;
+
+	t = v + size + 1;
+	if ((size = snprintf(t, length, "%ld", tv.tv_sec)) >= length)
+		goto bad;
+
+	va_end(ap);
+
+	graphite_send(c, m, v, t);
+
+	return (0);
+bad:
+	va_end(ap);
+
+	return (-1);
+}
+
 void
 graphite_disconnect(struct graphite_connection *c)
 {
