@@ -276,9 +276,9 @@ graphite_send_metric(struct graphite_connection *c, char *prefix,
 	}
 	if ((size = snprintf(m, length, "%s", metric)) >= length)
 		goto bad;
-	length -= size + 1
+	length -= size + 1;
 
-	v = strlen(m) + 1;
+	v = m + strlen(m) + 1;
 	if ((size = vsnprintf(v, length, format, ap)) >= length)
 		goto bad;
 	length -= size + 1;
