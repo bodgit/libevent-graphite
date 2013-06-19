@@ -31,6 +31,7 @@
 #define	UNDERSCORE	"_"
 #define	MINUS		"-"
 #define	PERIOD		"."
+#define	BANG		"!"
 
 void	 graphite_read(struct bufferevent *, void *);
 void	 graphite_event(struct bufferevent *, short, void *);
@@ -60,7 +61,8 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 	size_t	 len;
 
 	if (key != NULL) {
-		if (strspn(key, LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD) !=
+		if (strspn(key,
+		    LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD BANG) !=
 		    strlen(key))
 			goto bad;
 		if (part)
@@ -68,7 +70,7 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 	} else {
 		/* Scan the metric key, make a note of how long it is */
 		if ((len = strspn(ptr,
-		    LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD)) == 0)
+		    LOWER UPPER DIGITS UNDERSCORE MINUS PERIOD BANG)) == 0)
 			goto bad;
 		if (part)
 			part[GRAPHITE_PART_METRIC] = ptr;
