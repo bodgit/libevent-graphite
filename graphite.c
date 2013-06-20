@@ -58,7 +58,7 @@ int
 graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 {
 	char	*ptr = line;
-	size_t	 len;
+	size_t	 len, klen = 0;
 
 	if (key != NULL) {
 		if (strspn(key,
@@ -74,7 +74,7 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 			goto bad;
 		if (part)
 			part[GRAPHITE_PART_METRIC] = ptr;
-		ptr += len;
+		ptr += klen = len;
 
 		/* Scan the spaces after the metric key */
 		if ((len = strspn(ptr, SPACE)) == 0)
@@ -113,7 +113,7 @@ graphite_parse(unsigned char *key, unsigned char *line, unsigned char *part[])
 	if (*ptr != '\0')
 		*ptr = '\0';
 
-	return (0);
+	return (klen);
 bad:
 	return (-1);
 }
